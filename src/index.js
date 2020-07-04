@@ -1,18 +1,14 @@
 import { 
     Engine,
     World,
-    Body, 
     Bodies,
     Constraint, 
     Render,
     Mouse,
-    Composites,
-    Composite,
-    Query,
-    Events,
-    Detector,
     MouseConstraint,
-             } from 'matter-js'
+    Events,
+    Vector,
+    } from 'matter-js'
 
 
 
@@ -31,7 +27,7 @@ let engine = Engine.create(),
         options: {
             width: 1000,
             height: 600,
-            background: '#666',
+            background: '#000',
             // showBroadphase: true,
             // showAxes: true,
             // showCollisions: true,
@@ -86,12 +82,46 @@ bodyB: ball5
 
 var platform = Bodies.rectangle(500, 100, 410, 30, {
     render: {
-        fillStyle: '#000',
+        fillStyle: '#fff',
     },
     chamfer: 10,
     isStatic: true,
 })
 World.add(world, platform);
+const trackLine = body => {
+    let trail = [];
+    Events.on(render, 'afterRender', function() {
+        trail.unshift({
+            position: Vector.clone(body.position),
+            speed: body.speed
+        });
+
+        Render.startViewTransform(render);
+        render.context.globalAlpha = 0.7;
+
+        for (var i = 0; i < trail.length; i += 1) {
+            var point = trail[i].position,
+                speed = trail[i].speed;
+            
+            var hue = 250 + Math.round((1 - Math.min(1, speed / 10)) * 170);
+            render.context.fillStyle = '#fff';
+            render.context.fillRect(point.x, point.y, 2, 2);
+        }
+
+        render.context.globalAlpha = 1;
+        Render.endViewTransform(render);
+
+        if (trail.length > 100) {
+            trail.pop();
+        }
+    });
+}
+
+trackLine(ball)
+trackLine(ball2)
+trackLine(ball3)
+trackLine(ball4)
+trackLine(ball5)
 
 
 // add mouse control
