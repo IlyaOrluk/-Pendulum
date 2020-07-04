@@ -32,17 +32,13 @@ let engine = Engine.create(),
             // showAxes: true,
             // showCollisions: true,
             // showConvexHulls: true,
-            showVelocity: true,
+            // showVelocity: true,
             wireframes: false // <-- important
         }
 })
 
 const ballOptoins = { render: {
-    sprite: {
-        texture: 'https://answers.unity.com/storage/temp/74016-0001.png',
-        xScale: .9,
-        yScale: .9,
-    }
+    fillStyle: '#fff'
 }, density: 0.5, frictionAir: 0.001, slop: 0.5, friction: 1, restitution: 1.05,}
 
 var ball = Bodies.circle(200, 380, 50, ballOptoins);
@@ -103,9 +99,8 @@ const trackLine = body => {
             var point = trail[i].position,
                 speed = trail[i].speed;
             
-            var hue = 250 + Math.round((1 - Math.min(1, speed / 10)) * 170);
             render.context.fillStyle = '#fff';
-            render.context.fillRect(point.x, point.y, 2, 2);
+            render.context.fillRect(point.x, point.y, 3, 3);
         }
 
         render.context.globalAlpha = 1;
@@ -123,6 +118,32 @@ trackLine(ball3)
 trackLine(ball4)
 trackLine(ball5)
 
+Events.on(engine, 'collisionStart', function(event) {
+    var pairs = event.pairs;
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        pair.bodyA.render.fillStyle = '#666';
+        pair.bodyB.render.fillStyle = '#666';
+    }
+});
+Events.on(engine, 'collisionActive', function(event) {
+    var pairs = event.pairs;
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        pair.bodyA.render.fillStyle = '#fff';
+        pair.bodyB.render.fillStyle = '#fff';
+    }
+    
+});
+Events.on(engine, 'collisionEnd', function(event) {
+    var pairs = event.pairs;
+    for (var i = 0; i < pairs.length; i++) {
+        var pair = pairs[i];
+        pair.bodyA.render.fillStyle = '#fff';
+        pair.bodyB.render.fillStyle = '#fff';
+    }
+
+});
 
 // add mouse control
 let mouse = Mouse.create(render.canvas),
